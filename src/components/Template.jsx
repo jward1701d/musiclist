@@ -1,16 +1,18 @@
 import React from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
+import Header from './shared/Header';
+import HomePage from './home/HomePage';
+import ProfilePage from './account/ProfilePage';
 
 export default function Template() {
   return (
-    <div>
+    <Router>
       <div className="wrapper">
-        <header>
-          <h1>MusicList</h1>
-        </header>
+        <Header username="Anonymous" />
+        <Route exact path="/" component={HomePage} />
+        <Route path="/account/profile/:id" component={ProfilePage} />
       </div>
-      <div className="content">
-                Content will go here.
-      </div>
-    </div>
+    </Router>
   );
 }
