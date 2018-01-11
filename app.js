@@ -17,10 +17,11 @@ const webpackConfig = require('./webpack.config');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 
+const User = require('./models/user');
+
 const index = require('./routes/index');
 const api = require('./routes/api/index');
 const users = require('./routes/api/users');
-const User = require('./models/user');
 
 const app = express();
 
@@ -47,12 +48,12 @@ const webpackCompiler = webpack(webpackConfig);
 app.use(webpackDevMiddleware(webpackCompiler, {
   publicPath: webpackConfig.output.publicPath,
   stats: {
-    color: true,
+    colors: true,
     chunks: true,
     'errors-only': true,
   },
 }));
-app.use(webpackHotMiddleware(webpackCompiler,{
+app.use(webpackHotMiddleware(webpackCompiler, {
   log: console.log,
 }));
 
@@ -60,7 +61,7 @@ app.use('/api', api);
 app.use('/api/users', users);
 app.use('/*', index);
 
-// Configure Passprt
+// Configure Passport
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
