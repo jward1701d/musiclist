@@ -7,6 +7,8 @@ export const loginFailure = error => ({ type: 'AUTHENTICATION_LOGIN_FAILURE', er
 export const loginSuccess = json => ({ type: 'AUTHENTICATION_LOGIN_SUCCESS', json });
 export const logoutFailure = error => ({ type: 'AUTHENTICATION_LOGOUT_FAILURE', error });
 export const logoutSuccess = () => ({ type: 'AUTHENTICATION_LOGOUT_SUCCESS' });
+export const registrationFailure = () => ({ type: 'AUTHENTICATION_REGISTRATION_FAILURE' });
+export const registrationSuccess = () => ({ type: 'AUTHENTICATION_REGISTRATION_SUCCESS' });
 export const sessionCheckFailure = () => ({ type: 'AUTHENTICATION_SESSION_CHECK_FAILURE' });
 export const sessionCheckSuccess = json => ({ type: 'AUTHENTICATION_SESSION_CHECK_SUCCESS', json });
 
@@ -85,7 +87,6 @@ export function logUserIn(userData) {
   };
 }
 
-
 // Log User Out
 export function logUserOut() {
   return async (dispatch) => {
@@ -112,8 +113,50 @@ export function logUserOut() {
     .catch((error) => {
       dispatch(logoutFailure(error));
     });
-
     // turn off spinner
+    return dispatch(decrementProgress());
+  };
+}
+
+// Register a User
+export function registerUser(userData) {
+  return async (dispatch) => {
+    // turn the spinner
+    dispatch(incrementProgress());
+
+    // contact the API
+    await fetch(
+      // Where to contact
+      '/api/authentication/register',
+      // What to send
+      {
+        method: 'POST',
+        body: JSON.stringify(userData),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      },
+    )
+    .then((response) => {
+      if(response.status === 200) {
+        return response.json();
+      }
+      return null;
+    })
+    .then(async (json) =>{
+      if(json){
+        await dispatch(loginSuccess(json));
+        await dispatch(registrationSuccess());
+      } else {
+        dispatch(registrationFailure(new Error('Registration Failed')));
+      }
+    })
+    .catch((error) => {
+      dispatch(registrationFailure(error));
+    });
+
+    // Turn spinner off
     return dispatch(decrementProgress());
   };
 }
