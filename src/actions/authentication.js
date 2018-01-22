@@ -76,7 +76,7 @@ export function logUserIn(userData) {
     if (json) {
       dispatch(loginSuccess(json));
     } else {
-      dispatch(loginFailure(new Error('Authentication Failed')));
+      dispatch(loginFailure(new Error('Email or Password Incorrect. Please Try again.')));
     }
   })
   .catch((error) => {
@@ -108,11 +108,11 @@ export function logUserOut() {
       if (response.status === 200) {
         dispatch(logoutSuccess());
       } else {
-        dispatch(logoutFailure(`Error: ${response.status}`));
+        dispatch(logoutFailure(new Error(response.status)));
       }
     })
     .catch((error) => {
-      dispatch(logoutFailure(error));
+      dispatch(logoutFailure(new Error(error)));
     });
     // turn off spinner
     return dispatch(decrementProgress());
@@ -150,11 +150,11 @@ export function registerUser(userData) {
         await dispatch(loginSuccess(json));
         await dispatch(registrationSuccess());
       } else {
-        dispatch(registrationFailure(new Error('Registration Failed')));
+        dispatch(registrationFailure(new Error('Registration Failed. Please try again.')));
       }
     })
     .catch((error) => {
-      dispatch(registrationFailure(error));
+      dispatch(registrationFailure(new Error(error)));
     });
 
     // Turn spinner off
